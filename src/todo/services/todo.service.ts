@@ -1,4 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { StatusArgs } from '../dto/args/status.args';
 import { CreateTodoDto } from '../dto/inputs/create-todo.dto';
 import { UpdateTodoDto } from '../dto/inputs/updateTodo.dto';
 import { Todo } from '../entities/todo.entity';
@@ -22,7 +23,22 @@ export class TodoService {
       done: true,
     },
   ];
-  findAll(): Todo[] {
+
+  get totalTodos() {
+    return this.todos.length;
+  }
+
+  get completedTodos() {
+    return this.todos.filter((todo) => todo.done == true).length;
+  }
+
+  get pendingTodos() {
+    return this.todos.filter((todo) => todo.done == false).length;
+  }
+  findAll(statusArgs?: StatusArgs): Todo[] {
+    if (statusArgs && statusArgs.status != undefined) {
+      return this.todos.filter((todo) => todo.done == statusArgs.status);
+    }
     return this.todos;
   }
 
